@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.106
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitexTradingBot", "BitexTradingBot\BitexTradingBot.csproj", "{D3424DBA-01EF-46DE-AC56-CFE4E7CE8838}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitexTradingBot.Core", "BitexTradingBot.Core\BitexTradingBot.Core.csproj", "{C1ED523F-22A4-466C-A805-803065FAFA03}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D3424DBA-01EF-46DE-AC56-CFE4E7CE8838}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3424DBA-01EF-46DE-AC56-CFE4E7CE8838}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3424DBA-01EF-46DE-AC56-CFE4E7CE8838}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3424DBA-01EF-46DE-AC56-CFE4E7CE8838}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1ED523F-22A4-466C-A805-803065FAFA03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1ED523F-22A4-466C-A805-803065FAFA03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1ED523F-22A4-466C-A805-803065FAFA03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1ED523F-22A4-466C-A805-803065FAFA03}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {20BA334F-7795-42C6-BF69-F23DF1038436}
+	EndGlobalSection
+EndGlobal
