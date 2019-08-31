@@ -43,11 +43,12 @@ namespace BitexTradingBot
 
             services.AddTransient<WebJobEntryPoint>();
             services.AddTransient<IHttpClientApi, HttpClientApi>();
+            services.AddTransient<ITradingApi, TradingApi>();
             services.AddSingleton<IWebJobConfiguration>(_appConfig.GetSection("WebJobConfiguration").Get<WebJobConfiguration>());
 
             services.AddHttpClient("bitex", c =>
             {
-                c.BaseAddress = new Uri("https://sandbox.bitex.la/api/");
+                c.BaseAddress = new Uri("https://bitex.la/api/");
                 //// Github API versioning
                 //c.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
                 //// Github requires a user-agent

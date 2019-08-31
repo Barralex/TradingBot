@@ -4,6 +4,6 @@ namespace BitexTradingBot.Core.Interfaces
 {
     public interface ITradingApi
     {
-        Task<TResponse> GetMarket<TResponse>() where TResponse : class;
+        Task<TResponse> GetTickers<TResponse>() where TResponse : class;
     }
 }

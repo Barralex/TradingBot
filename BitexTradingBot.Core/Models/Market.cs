@@ -14,17 +14,12 @@ namespace BitexTradingBot.Core.Models
         public string Type { get; set; }
 
         [JsonProperty("data.relationships.bids.data")]
-        public List<TradingPrices> Bids { get; set; } = new List<TradingPrices>();
+        public List<Data> Bids { get; set; } = new List<Data>();
 
         [JsonProperty("data.relationships.asks.data")]
-        public List<TradingPrices> Aks { get; set; } = new List<TradingPrices>();
+        public List<Data> Aks { get; set; } = new List<Data>();
     }
 
-    public class TradingPrices
-    {
-        public string Id { get; set; }
-        public string Type { get; set; }
-    }
 }
 
 
