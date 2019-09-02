@@ -19,6 +19,17 @@ namespace BitexTradingBot.Core.DataAccess.DataInvoke
 
         public async Task<TResponse> InvokeService<TResponse>(ApiClientOptions options) where TResponse : class
         {
+            var result =  await InvokeBaseService(options);
+            return JsonConvert.DeserializeObject<TResponse>(result);
+        }
+
+        public async Task InvokeService(ApiClientOptions options)
+        {
+            await InvokeBaseService(options);
+        }
+
+        private async Task<string> InvokeBaseService(ApiClientOptions options)
+        {
 
             using (HttpClient client = _clientFactory.CreateClient(options.HttlClientName))
             {
@@ -50,10 +61,8 @@ namespace BitexTradingBot.Core.DataAccess.DataInvoke
                 if (options.RequestType == ApiClientRequestTypes.Post) response = await client.PostAsync(options.Uri, httpContent);
 
                 response.EnsureSuccessStatusCode();
-                string responseBody = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<TResponse>(responseBody);
+                return await response.Content.ReadAsStringAsync();
             }
-
         }
     }
 }

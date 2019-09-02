@@ -24,28 +24,27 @@ namespace BitexTradingBot.Core.Implementations
             });
         }
 
-        public async Task<TResponse> PlaceBidOrder<TResponse>(object request) where TResponse : class
+        public async Task<TResponse> PlaceOrder<TResponse>(object request, string orderType) where TResponse : class
         {
 
             return await _httpClientApi.InvokeService<TResponse>(new ApiClientOptions
             {
-                Uri = "bids",
+                Uri = orderType,
                 HttlClientName = "bitex",
                 RequestType = ApiClientRequestTypes.Post,
                 RequestContent = request
             });
         }
 
-        public async Task<TResponse> CancelBidOrder<TResponse>(int bidId) where TResponse : class
+        public async Task CancelOrder(string orderId, string orderType)
         {
-            return await _httpClientApi.InvokeService<TResponse>(new ApiClientOptions
+            await _httpClientApi.InvokeService(new ApiClientOptions
             {
-                Uri = $"bids/{bidId}/cancel",
+                Uri = $"{orderType }/{orderId}/cancel",
                 HttlClientName = "bitex",
                 RequestType = ApiClientRequestTypes.Post,
                 RequestContent = ""
             });
         }
-
     }
 }

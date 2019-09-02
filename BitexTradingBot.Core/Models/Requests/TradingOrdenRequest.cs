@@ -2,10 +2,10 @@
 
 namespace BitexTradingBot.Core.Models.Requests
 {
-    public class BidRequest
+    public class TradingOrdenRequest
     {
 
-        public BidRequest(double amount, double price, string orderbook, string orderType)
+        public TradingOrdenRequest(double amount, double price, string orderbook, string orderType)
         {
             Data.Attributes.Amount = amount;
             Data.Attributes.Price = price;
@@ -13,16 +13,16 @@ namespace BitexTradingBot.Core.Models.Requests
             Data.Type = orderType;
         }
 
-        public BidRequestDetails Data { get; set; } = new BidRequestDetails();
+        public TradingOrdentDetails Data { get; set; } = new TradingOrdentDetails();
     }
 
-    public class BidRequestDetails
+    public class TradingOrdentDetails
     {
         public string Type { get; set; }
-        public BidRequestAttributes Attributes { get; set; } = new BidRequestAttributes();
+        public TradingOrdentAttributes Attributes { get; set; } = new TradingOrdentAttributes();
     }
 
-    public class BidRequestAttributes
+    public class TradingOrdentAttributes
     {
         public double Amount { get; set; }
         public double Price { get; set; }

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace BitexTradingBot.Core.Models
 {
     [JsonConverter(typeof(JsonPathConverter))]
-    public class Bid
+    public class TradingOrder
     {
         [JsonProperty("data.id")]
         public string Id { get; set; }
@@ -13,10 +13,10 @@ namespace BitexTradingBot.Core.Models
         public string Type { get; set; }
 
         [JsonProperty("data.attributes")]
-        public BidAttributes Attributes { get; set; } = new BidAttributes();
+        public TradingOrderAttributes Attributes { get; set; } = new TradingOrderAttributes();
     }
 
-    public class BidAttributes
+    public class TradingOrderAttributes
     {
         [JsonProperty("amount")]
         public double? Amount { get; set; }
