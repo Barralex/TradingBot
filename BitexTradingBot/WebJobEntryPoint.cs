@@ -1,5 +1,6 @@
 ﻿using BitexTradingBot.Core.Interfaces;
 using BitexTradingBot.Core.Models;
+using BitexTradingBot.Core.Models.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +21,13 @@ namespace BitexTradingBot
 
         public async Task Run()
         {
-            Console.WriteLine(_webJobConfiguration.Message);
 
-            var result = await _tradingApi.GetTickers<Tickers>();
 
-            //Console.Write("El mejor bid ahora es: {0} y el mejor ask es: {1}", result.Aks.FirstOrDefault().Id, result.Bids.FirstOrDefault().Id);
+            var request = new BidRequest(10, 1, _webJobConfiguration.BitexDefaultMarket, "bids");
+
+            var result = await _tradingApi.PlaceBidOrder<Bid>(request);
+
+
 
         }
     }

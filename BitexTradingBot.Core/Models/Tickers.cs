@@ -21,10 +21,10 @@ namespace BitexTradingBot.Core.Models
         public string Type { get; set; }
 
         [JsonProperty("attributes")]
-        public Attributes Attributes { get; set; } = new Attributes();
+        public TickersAttributes Attributes { get; set; } = new TickersAttributes();
     }
 
-    public class Attributes
+    public class TickersAttributes
     {
         [JsonProperty("last")]
         public double? Last { get; set; }

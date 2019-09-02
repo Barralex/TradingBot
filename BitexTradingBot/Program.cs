@@ -1,4 +1,4 @@
-﻿using BitexTradingBot.Core.Helpers;
+﻿using BitexTradingBot.Core.DataAccess.DataInvoke;
 using BitexTradingBot.Core.Implementations;
 using BitexTradingBot.Core.Interfaces;
 using BitexTradingBot.Core.Models;
@@ -41,18 +41,17 @@ namespace BitexTradingBot
         {
             IServiceCollection services = new ServiceCollection();
 
+            var WebJobConfiguration = _appConfig.GetSection("WebJobConfiguration").Get<WebJobConfiguration>();
+
             services.AddTransient<WebJobEntryPoint>();
             services.AddTransient<IHttpClientApi, HttpClientApi>();
             services.AddTransient<ITradingApi, TradingApi>();
-            services.AddSingleton<IWebJobConfiguration>(_appConfig.GetSection("WebJobConfiguration").Get<WebJobConfiguration>());
+            services.AddSingleton<IWebJobConfiguration>(WebJobConfiguration);
 
             services.AddHttpClient("bitex", c =>
             {
-                c.BaseAddress = new Uri("https://bitex.la/api/");
-                //// Github API versioning
-                //c.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
-                //// Github requires a user-agent
-                //c.DefaultRequestHeaders.Add("User-Agent", "HttpClientFactory-Sample");
+                c.BaseAddress = new Uri(WebJobConfiguration.BitexApiUrl);
+                c.DefaultRequestHeaders.Add("Authorization", WebJobConfiguration.BitexApiKey);
             });
 
             _serviceProvider = services.BuildServiceProvider();
