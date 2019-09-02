@@ -19,7 +19,6 @@ namespace BitexTradingBot.Core.Models
         [JsonProperty("data.relationships.asks.data")]
         public List<Data> Aks { get; set; } = new List<Data>();
     }
-
 }
 
 

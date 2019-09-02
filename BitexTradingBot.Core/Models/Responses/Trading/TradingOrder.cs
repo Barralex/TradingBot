@@ -1,18 +1,19 @@
 ﻿using BitexTradingBot.Core.Helpers;
 using Newtonsoft.Json;
+using System;
 
 namespace BitexTradingBot.Core.Models
 {
     [JsonConverter(typeof(JsonPathConverter))]
     public class TradingOrder
     {
-        [JsonProperty("data.id")]
-        public string Id { get; set; }
+        [JsonProperty("data")]
+        public TradingOrderDetails Details { get; set; } = new TradingOrderDetails();
+    }
 
-        [JsonProperty("data.type")]
-        public string Type { get; set; }
-
-        [JsonProperty("data.attributes")]
+    public class TradingOrderDetails : Data
+    {
+        [JsonProperty("attributes")]
         public TradingOrderAttributes Attributes { get; set; } = new TradingOrderAttributes();
     }
 
@@ -29,7 +30,8 @@ namespace BitexTradingBot.Core.Models
 
         [JsonProperty("status")]
         public string Status { get; set; }
+
+        [JsonProperty("created_at")]
+        public DateTime CreatedAt { get; set; }
     }
 }
-
-

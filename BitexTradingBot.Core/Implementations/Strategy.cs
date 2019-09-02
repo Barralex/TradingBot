@@ -1,16 +1,15 @@
 ﻿using System.Threading.Tasks;
-using BitexTradingBot.Core.DataAccess.DataInvoke;
 using BitexTradingBot.Core.Interfaces;
 
 namespace BitexTradingBot.Core.Implementations
 {
-    public class SimpleStrategy : IStrategy
+    public class Strategy : IStrategy
     {
-        private readonly IHttpClientApi _httpClientApi;
+        private readonly ITradingApi _tradingApi;
 
-        public SimpleStrategy(IHttpClientApi httpClientApi)
+        public Strategy(ITradingApi tradingApi)
         {
-            _httpClientApi = httpClientApi;
+            _tradingApi = tradingApi;
         }
 
         public Task BuyAtMarket()

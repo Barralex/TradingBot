@@ -24,9 +24,18 @@ namespace BitexTradingBot.Core.Implementations
             });
         }
 
+        public async Task<TResponse> GetOwnOrders<TResponse>() where TResponse : class
+        {
+            return await _httpClientApi.InvokeService<TResponse>(new ApiClientOptions
+            {
+                Uri = "orders",
+                HttlClientName = "bitex",
+                RequestType = ApiClientRequestTypes.Get
+            });
+        }
+
         public async Task<TResponse> PlaceOrder<TResponse>(object request, string orderType) where TResponse : class
         {
-
             return await _httpClientApi.InvokeService<TResponse>(new ApiClientOptions
             {
                 Uri = orderType,
@@ -46,5 +55,6 @@ namespace BitexTradingBot.Core.Implementations
                 RequestContent = ""
             });
         }
+
     }
 }

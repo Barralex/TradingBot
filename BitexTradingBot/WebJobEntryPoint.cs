@@ -1,5 +1,9 @@
 ﻿using BitexTradingBot.Core.Constants;
 using BitexTradingBot.Core.Interfaces;
+using BitexTradingBot.Core.Models;
+using BitexTradingBot.Core.Models.Requests;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BitexTradingBot
@@ -19,11 +23,11 @@ namespace BitexTradingBot
         {
 
 
-            //var request = new TradingOrdenRequest(10, 1, _webJobConfiguration.BitexDefaultMarket, TradingContants.Bids);
+            var request = new TradingOrdenRequest(10, 1, _webJobConfiguration.BitexDefaultMarket, TradingContants.Bids);
 
-            //var result = await _tradingApi.PlaceOrder<TradingOrder>(request, TradingContants.Bids);
+            var result = await _tradingApi.PlaceOrder<TradingOrder>(request, TradingContants.Bids);
 
-           await _tradingApi.CancelOrder(59447656.ToString(), TradingContants.Bids);
+            //var a = await _tradingApi.GetOwnOrders<Orders>();
 
         }
     }
