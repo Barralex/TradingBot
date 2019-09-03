@@ -5,10 +5,10 @@ using System.Collections.Generic;
 namespace BitexTradingBot.Core.Models
 {
     [JsonConverter(typeof(JsonPathConverter))]
-    public class Tickers
+    public class TickersRoot
     {
         [JsonProperty("data")]
-        public List<TickersDetails> TickersDetails { get; set; } = new List<TickersDetails>();
+        public List<TickersDetails> Tickers { get; set; } = new List<TickersDetails>();
     }
 
     public class TickersDetails

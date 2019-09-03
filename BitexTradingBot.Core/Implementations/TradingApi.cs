@@ -56,5 +56,14 @@ namespace BitexTradingBot.Core.Implementations
             });
         }
 
+        public async Task<TResponse> GetCashWallet<TResponse>(string currency) where TResponse : class
+        {
+            return await _httpClientApi.InvokeService<TResponse>(new ApiClientOptions
+            {
+                Uri = $"cash_wallets/{currency}",
+                HttlClientName = "bitex",
+                RequestType = ApiClientRequestTypes.Get
+            });
+        }
     }
 }

@@ -23,11 +23,13 @@ namespace BitexTradingBot
         {
 
 
-            var request = new TradingOrdenRequest(10, 1, _webJobConfiguration.BitexDefaultMarket, TradingContants.Bids);
+            //var request = new TradingOrdenRequest(10, 1, _webJobConfiguration.BitexDefaultMarket, TradingContants.Bids);
 
-            var result = await _tradingApi.PlaceOrder<TradingOrder>(request, TradingContants.Bids);
+            //var result = await _tradingApi.PlaceOrder<TradingOrder>(request, TradingContants.Bids);
 
-            //var a = await _tradingApi.GetOwnOrders<Orders>();
+            ////var a = await _tradingApi.GetOwnOrders<Orders>();
+            ///
+            var a = await _tradingApi.GetCashWallet<CashWallet>("usd");
 
         }
     }
