@@ -1,19 +1,21 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using BitexTradingBot.Core.Constants;
+using BitexTradingBot.Core.Helpers;
 using BitexTradingBot.Core.Interfaces;
 using BitexTradingBot.Core.Models;
 using BitexTradingBot.Core.Models.Requests;
+using BitexTradingBot.Core.Models.Responses.Market;
 
-namespace BitexTradingBot.Core.Implementations
+namespace BitexTradingBot
 {
     public class Strategy : IStrategy
     {
         private readonly ITradingApi _tradingApi;
         private readonly IWebJobConfiguration _webJobConfiguration;
 
-        private readonly double minimumProfitPercent = 0.75;
-        private readonly double maximumProfitPercent = 1.25;
+        private readonly double minimumProfitPercent = 0.0075;
+        private readonly double maximumProfitPercent = 0.01;
 
         public Strategy(ITradingApi tradingApi, IWebJobConfiguration webJobConfiguration)
         {
@@ -32,6 +34,7 @@ namespace BitexTradingBot.Core.Implementations
 
             if (result.Orders.Count == 0)
             {
+                var usdBalance = await _tradingApi.GetCashWallet<CashWallet>("usd");
 
                 // There's nothing here. Time to place a bid. 
                 // But first. I need to know the bitcoin price in order to calculate the bid price.
@@ -39,27 +42,40 @@ namespace BitexTradingBot.Core.Implementations
                 var tickersResult = await _tradingApi.GetTickers<TickersRoot>();
                 var btcTicker = tickersResult.Tickers.Where(x => x.Id == _webJobConfiguration.BitexDefaultMarket).FirstOrDefault();
 
-                var actualBtcPrice = btcTicker.Attributes.Last.Value;
+                var actualBtcInformation= await _tradingApi.GetBtcPrice<Cryptocurrency>(); /*4100.20;*/
 
                 // Cool, once i have the current exchage btc price. I need to calcule the bid price. Let's look for the profits and make an average.
 
-                var ProfitAverage = GetRandomNumber(minimumProfitPercent, maximumProfitPercent);
-                var BidPrice = (actualBtcPrice * ProfitAverage) + actualBtcPrice;
+                var BidPrice = actualBtcInformation.Details.Price.CalculateOrderPrice(minimumProfitPercent, maximumProfitPercent);
 
                 // Ok, I have average. Time To make the bid
 
-                //var bidRequest = new TradingOrdenRequest(BidPrice);
+                var bidRequest = new TradingOrdenRequest(usdBalance.Attributes.Available, BidPrice, _webJobConfiguration.BitexDefaultMarket, TradingContants.Bids);
 
-                //_tradingApi.PlaceOrder<TradingOrder>()
+                var attemptOrder = _tradingApi.PlaceOrder<TradingOrder>(bidRequest, TradingContants.Bids);
+
+            }
+            else
+            {
+
+                // What kind of order do I have
+
+                var order = result.Orders.FirstOrDefault();
+
+                if(order.Type == "bids")
+                {
+
+                    // Ok, what do we have here. It's a bid. We need to know if is old enough to make a new one.
+
+
+
+                }
+
 
             }
 
-        }
 
-        public double GetRandomNumber(double minimum, double maximum)
-        {
-            Random random = new Random();
-            return random.NextDouble() * (maximum - minimum) + minimum;
+
         }
 
     }

@@ -18,9 +18,9 @@ namespace BitexTradingBot.Core.Models
     public class CashWalletAttributes
     {
         [JsonProperty("balance")]
-        public string Balance { get; set; }
+        public double Balance { get; set; }
         [JsonProperty("available")]
-        public string Available { get; set; }
+        public double Available { get; set; }
         [JsonProperty("currency")]
         public string Currency { get; set; }
     }

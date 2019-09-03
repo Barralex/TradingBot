@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace BitexTradingBot.Core.Interfaces
+namespace BitexTradingBot
 {
     public interface IStrategy
     {

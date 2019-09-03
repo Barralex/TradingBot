@@ -1,4 +1,5 @@
-﻿using BitexTradingBot.Core.DataAccess.DataInvoke;
+﻿using BitexTradingBot;
+using BitexTradingBot.Core.DataAccess.DataInvoke;
 using BitexTradingBot.Core.Implementations;
 using BitexTradingBot.Core.Interfaces;
 using BitexTradingBot.Core.Models;
@@ -46,12 +47,20 @@ namespace BitexTradingBot
             services.AddTransient<WebJobEntryPoint>();
             services.AddTransient<IHttpClientApi, HttpClientApi>();
             services.AddTransient<ITradingApi, TradingApi>();
+            services.AddTransient<IStrategy, Strategy>();
+
             services.AddSingleton<IWebJobConfiguration>(WebJobConfiguration);
 
             services.AddHttpClient("bitex", c =>
             {
                 c.BaseAddress = new Uri(WebJobConfiguration.BitexApiUrl);
                 c.DefaultRequestHeaders.Add("Authorization", WebJobConfiguration.BitexApiKey);
+            });
+
+            services.AddHttpClient("coinmarketcap", c =>
+            {
+                c.BaseAddress = new Uri(WebJobConfiguration.CoinmarketcapUrl);
+                c.DefaultRequestHeaders.Add("X-CMC_PRO_API_KEY", WebJobConfiguration.CoinmarketcapApi);
             });
 
             _serviceProvider = services.BuildServiceProvider();

@@ -65,5 +65,15 @@ namespace BitexTradingBot.Core.Implementations
                 RequestType = ApiClientRequestTypes.Get
             });
         }
+
+        public async Task<TResponse> GetBtcPrice<TResponse>() where TResponse : class
+        {
+            return await _httpClientApi.InvokeService<TResponse>(new ApiClientOptions
+            {
+                Uri = "cryptocurrency/quotes/latest?id=1",
+                HttlClientName = "coinmarketcap",
+                RequestType = ApiClientRequestTypes.Get
+            });
+        }
     }
 }
