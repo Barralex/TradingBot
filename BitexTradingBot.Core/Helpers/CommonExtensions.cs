@@ -9,5 +9,11 @@ namespace BitexTradingBot.Core.Helpers
             var profitAverage = new Random().NextDouble() * (maximum - minimum) + minimum;
             return orderPrice - (orderPrice * profitAverage);
         }
+
+        public static bool IsOrderType(this string orderType, string orderTypeToCompare)
+        {
+            return orderType == orderTypeToCompare;
+        }
+
     }
 }

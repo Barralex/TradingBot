@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using BitexTradingBot.Core.Constants;
 using BitexTradingBot.Core.Helpers;
@@ -34,26 +35,7 @@ namespace BitexTradingBot
 
             if (result.Orders.Count == 0)
             {
-                var usdBalance = await _tradingApi.GetCashWallet<CashWallet>("usd");
-
-                // There's nothing here. Time to place a bid. 
-                // But first. I need to know the bitcoin price in order to calculate the bid price.
-
-                var tickersResult = await _tradingApi.GetTickers<TickersRoot>();
-                var btcTicker = tickersResult.Tickers.Where(x => x.Id == _webJobConfiguration.BitexDefaultMarket).FirstOrDefault();
-
-                var actualBtcInformation= await _tradingApi.GetBtcPrice<Cryptocurrency>(); /*4100.20;*/
-
-                // Cool, once i have the current exchage btc price. I need to calcule the bid price. Let's look for the profits and make an average.
-
-                var BidPrice = actualBtcInformation.Details.Price.CalculateOrderPrice(minimumProfitPercent, maximumProfitPercent);
-
-                // Ok, I have average. Time To make the bid
-
-                var bidRequest = new TradingOrdenRequest(usdBalance.Attributes.Available, BidPrice, _webJobConfiguration.BitexDefaultMarket, TradingContants.Bids);
-
-                var attemptOrder = _tradingApi.PlaceOrder<TradingOrder>(bidRequest, TradingContants.Bids);
-
+                var attemptOrder = await _tradingApi.PlaceOrder<TradingOrder>(PrepareExchangeOrder(TradingContants.Bids), TradingContants.Bids);
             }
             else
             {
@@ -62,11 +44,11 @@ namespace BitexTradingBot
 
                 var order = result.Orders.FirstOrDefault();
 
-                if(order.Type == "bids")
+                if (order.Type.IsOrderType(TradingContants.Bids))
                 {
 
                     // Ok, what do we have here. It's a bid. We need to know if is old enough to make a new one.
-
+           
 
 
                 }
@@ -76,6 +58,25 @@ namespace BitexTradingBot
 
 
 
+        }
+
+        private async Task<TradingOrdenRequest> PrepareExchangeOrder(string orderType)
+        {
+            var usdBalance = await _tradingApi.GetCashWallet<CashWallet>("usd");
+
+            var tickersResult = await _tradingApi.GetTickers<TickersRoot>();
+            var btcTicker = tickersResult.Tickers.Where(x => x.Id == _webJobConfiguration.BitexDefaultMarket).FirstOrDefault();
+
+            var actualBtcInformation = await _tradingApi.GetBtcPrice<Cryptocurrency>();
+
+            var BidPrice = /*actualBtcInformation.Details.Price*/4100.20.CalculateOrderPrice(minimumProfitPercent, maximumProfitPercent);
+
+            if (usdBalance.Attributes.Available == 0)
+            {
+                throw new Exception("There is not more money left");
+            }
+
+            return new TradingOrdenRequest(usdBalance.Attributes.Available, BidPrice, _webJobConfiguration.BitexDefaultMarket, orderType);
         }
 
     }

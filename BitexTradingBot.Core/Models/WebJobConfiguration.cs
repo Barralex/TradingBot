@@ -9,5 +9,6 @@ namespace BitexTradingBot.Core.Models
         public string BitexApiKey { get; set; }
         public string CoinmarketcapUrl { get; set; }
         public string CoinmarketcapApi { get; set; }
+        public string DatabaseConnectionString { get; set; }
     }
 }

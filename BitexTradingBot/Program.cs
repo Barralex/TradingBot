@@ -1,5 +1,6 @@
-﻿using BitexTradingBot;
+﻿using BitexTradingBot.Core.DataAccess.DataBase.Contexts;
 using BitexTradingBot.Core.DataAccess.DataInvoke;
+using Microsoft.EntityFrameworkCore;
 using BitexTradingBot.Core.Implementations;
 using BitexTradingBot.Core.Interfaces;
 using BitexTradingBot.Core.Models;
@@ -36,6 +37,7 @@ namespace BitexTradingBot
                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
                .AddEnvironmentVariables()
                .Build();
+
         }
 
         private static void RegisterServices()
@@ -64,6 +66,8 @@ namespace BitexTradingBot
             });
 
             _serviceProvider = services.BuildServiceProvider();
+
+
 
         }
     }
