@@ -4,5 +4,8 @@
     {
         public readonly static string Bids = "bids";
         public readonly static string Aks = "aks";
+
+        public readonly static string CancelledStatus = "cancelled";
+        public readonly static string OpenStatus = "executing";
     }
 }

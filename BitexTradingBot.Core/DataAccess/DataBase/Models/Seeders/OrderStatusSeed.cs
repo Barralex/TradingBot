@@ -17,16 +17,21 @@ namespace BitexTradingBot.Core.DataAccess.DataBase.Seeders
                 new OrderStatus
                 {
                     Id = 1,
-                    Description = "Finished"
+                    Description = "Open"
                 },
                 new OrderStatus
                 {
                     Id = 2,
-                    Description = "Manually canceled"
+                    Description = "Finished"
                 },
                 new OrderStatus
                 {
                     Id = 3,
+                    Description = "Manually canceled"
+                },
+                new OrderStatus
+                {
+                    Id = 4,
                     Description = "Canceled by price change"
                 }
             );

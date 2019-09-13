@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BitexTradingBot.Core.Migrations
 {
     [DbContext(typeof(BitexTradingBotContext))]
-    [Migration("20190908044051_AddOrderTypeConfiguration")]
-    partial class AddOrderTypeConfiguration
+    [Migration("20190908201913_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,6 +32,28 @@ namespace BitexTradingBot.Core.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("OrderStatus");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Open"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Finished"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Manually canceled"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Canceled by price change"
+                        });
                 });
 
             modelBuilder.Entity("BitexTradingBot.Core.DataAccess.DataBase.Models.OrderType", b =>
@@ -71,7 +93,7 @@ namespace BitexTradingBot.Core.Migrations
 
                     b.Property<double>("InitialBalance");
 
-                    b.Property<bool>("OrderStatus");
+                    b.Property<bool>("IsActive");
 
                     b.Property<DateTime>("StarDate");
 
@@ -94,7 +116,7 @@ namespace BitexTradingBot.Core.Migrations
 
                     b.Property<string>("ExchangeOperationId");
 
-                    b.Property<double>("OperationResult");
+                    b.Property<double>("ExpectedOperationResult");
 
                     b.Property<int>("OrderStatusId");
 

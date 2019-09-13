@@ -1,9 +1,9 @@
 ﻿using BitexTradingBot.Core.DataAccess.DataBase.Contexts;
 using BitexTradingBot.Core.DataAccess.DataInvoke;
-using Microsoft.EntityFrameworkCore;
 using BitexTradingBot.Core.Implementations;
 using BitexTradingBot.Core.Interfaces;
 using BitexTradingBot.Core.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -65,9 +65,9 @@ namespace BitexTradingBot
                 c.DefaultRequestHeaders.Add("X-CMC_PRO_API_KEY", WebJobConfiguration.CoinmarketcapApi);
             });
 
+            services.AddDbContext<BitexTradingBotContext>(options => options.UseSqlServer(WebJobConfiguration.DatabaseConnectionString));
+
             _serviceProvider = services.BuildServiceProvider();
-
-
 
         }
     }

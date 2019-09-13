@@ -45,6 +45,16 @@ namespace BitexTradingBot.Core.Implementations
             });
         }
 
+        public async Task<TResponse> GetOrder<TResponse>(string orderType, string orderId) where TResponse : class
+        {
+            return await _httpClientApi.InvokeService<TResponse>(new ApiClientOptions
+            {
+                Uri = $"{orderType}/{orderId}",
+                HttlClientName = "bitex",
+                RequestType = ApiClientRequestTypes.Get
+            });
+        }
+
         public async Task CancelOrder(string orderId, string orderType)
         {
             await _httpClientApi.InvokeService(new ApiClientOptions

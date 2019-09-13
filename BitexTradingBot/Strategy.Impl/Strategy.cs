@@ -1,12 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using BitexTradingBot.Core.Constants;
+﻿using BitexTradingBot.Core.Constants;
+using BitexTradingBot.Core.DataAccess.DataBase.Contexts;
+using BitexTradingBot.Core.DataAccess.DataBase.Enums;
+using BitexTradingBot.Core.DataAccess.DataBase.Models;
 using BitexTradingBot.Core.Helpers;
 using BitexTradingBot.Core.Interfaces;
 using BitexTradingBot.Core.Models;
 using BitexTradingBot.Core.Models.Requests;
 using BitexTradingBot.Core.Models.Responses.Market;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BitexTradingBot
 {
@@ -14,14 +19,16 @@ namespace BitexTradingBot
     {
         private readonly ITradingApi _tradingApi;
         private readonly IWebJobConfiguration _webJobConfiguration;
+        private readonly BitexTradingBotContext _context;
+        private readonly double minimumProfitPercent = 0.01;
+        private readonly double maximumProfitPercent = 0.0130;
+        private readonly double percentToleranceMargin = 2;
 
-        private readonly double minimumProfitPercent = 0.0075;
-        private readonly double maximumProfitPercent = 0.01;
-
-        public Strategy(ITradingApi tradingApi, IWebJobConfiguration webJobConfiguration)
+        public Strategy(ITradingApi tradingApi, IWebJobConfiguration webJobConfiguration, BitexTradingBotContext context)
         {
             _tradingApi = tradingApi;
             _webJobConfiguration = webJobConfiguration;
+            _context = context;
         }
 
         public IWebJobConfiguration _WebJobConfiguration { get; }
@@ -29,54 +36,125 @@ namespace BitexTradingBot
         public async Task Start()
         {
 
-            // Look for my actual orders
+            var activeTrading = _context.Trading.Include(x => x.TradingTransactions).Where(s => s.IsActive).FirstOrDefault();
 
-            var result = await _tradingApi.GetOwnOrders<OrdersRoot>();
-
-            if (result.Orders.Count == 0)
+            if (activeTrading == null)
             {
-                var attemptOrder = await _tradingApi.PlaceOrder<TradingOrder>(PrepareExchangeOrder(TradingContants.Bids), TradingContants.Bids);
+                await CreateTradingOrder();
             }
             else
             {
+                var order = activeTrading.TradingTransactions.Last();
 
-                // What kind of order do I have
-
-                var order = result.Orders.FirstOrDefault();
-
-                if (order.Type.IsOrderType(TradingContants.Bids))
+                if (order.OrderTypeId == (int)OrderTypeEnum.Bid)
                 {
-
-                    // Ok, what do we have here. It's a bid. We need to know if is old enough to make a new one.
-           
-
-
+                    await HandleBidOrder(activeTrading, order);
                 }
-
 
             }
 
+        }
 
+        private async Task HandleBidOrder(Trading activeTrading, TradingTransaction order)
+        {
+
+            if (order.OrderStatusId == (int)OrderStatusEnum.Open)
+            {
+                var result = await _tradingApi.GetOrder<TradingOrder>(TradingContants.Bids, order.ExchangeOperationId);
+
+                if (result.Details.Attributes.Status == TradingContants.OpenStatus)
+                {
+                    var actualBtcInformation = await _tradingApi.GetBtcPrice<Cryptocurrency>();
+
+                    if (order.CryptocurrencyPrice.CalculatePercentDiference(actualBtcInformation.Details.Price) > percentToleranceMargin)
+                    {
+                        await CancelAndUpdateOrder(activeTrading, OrderStatusEnum.CanceledByPriceChange);
+                    }
+                }
+
+                if (result.Details.Attributes.Status == TradingContants.CancelledStatus)
+                {
+                    await CancelAndUpdateOrder(activeTrading, OrderStatusEnum.ManuallyCanceled);
+                }
+            }
+            else
+            {
+                await CreateTradingOrder();
+            }
 
         }
 
-        private async Task<TradingOrdenRequest> PrepareExchangeOrder(string orderType)
+        private async Task CancelAndUpdateOrder(Trading activeTrading, OrderStatusEnum cancellationReason)
+        {
+
+            await _tradingApi.CancelOrder(activeTrading.TradingTransactions.Last().ExchangeOperationId, TradingContants.Bids);
+
+            activeTrading.TradingTransactions.Last().OrderStatusId = (int)cancellationReason;
+
+            _context.Trading.Update(activeTrading);
+            await _context.SaveChangesAsync();
+
+            await CreateTradingOrder(activeTrading);
+        }
+
+        private async Task<TradingOrdenRequest> PrepareBidExchangeOrder()
         {
             var usdBalance = await _tradingApi.GetCashWallet<CashWallet>("usd");
 
-            var tickersResult = await _tradingApi.GetTickers<TickersRoot>();
-            var btcTicker = tickersResult.Tickers.Where(x => x.Id == _webJobConfiguration.BitexDefaultMarket).FirstOrDefault();
-
-            var actualBtcInformation = await _tradingApi.GetBtcPrice<Cryptocurrency>();
-
-            var BidPrice = /*actualBtcInformation.Details.Price*/4100.20.CalculateOrderPrice(minimumProfitPercent, maximumProfitPercent);
-
-            if (usdBalance.Attributes.Available == 0)
+            if (usdBalance.Attributes.Available < 1)
             {
                 throw new Exception("There is not more money left");
             }
 
-            return new TradingOrdenRequest(usdBalance.Attributes.Available, BidPrice, _webJobConfiguration.BitexDefaultMarket, orderType);
+            var actualBtcInformation = await _tradingApi.GetBtcPrice<Cryptocurrency>();
+
+            var BidPrice = ((actualBtcInformation.Details.Price) - 6500).CalculateProfitPrice(minimumProfitPercent, maximumProfitPercent);
+
+            return new TradingOrdenRequest(usdBalance.Attributes.Available, BidPrice, _webJobConfiguration.BitexDefaultMarket, TradingContants.Bids);
+        }
+
+        private async Task CreateTradingOrder(Trading actualOrder = null)
+        {
+
+            var order = await PrepareBidExchangeOrder();
+
+            var attemptOrderData = (await _tradingApi.PlaceOrder<TradingOrder>(order, TradingContants.Bids)).Details;
+
+            var individualTradingTransaction = new TradingTransaction
+            {
+                OrderTypeId = (int)OrderTypeEnum.Bid,
+                Amount = attemptOrderData.Attributes.Amount.Value,
+                CryptocurrencyPrice = attemptOrderData.Attributes.Price.Value,
+                ExpectedOperationResult = (attemptOrderData.Attributes.Amount.Value * attemptOrderData.Attributes.Price.Value),
+                StarDate = DateTime.Now,
+                OrderStatusId = (int)OrderStatusEnum.Open,
+                ExchangeOperationId = attemptOrderData.Id,
+            };
+
+            if (actualOrder == null)
+            {
+
+                var tradingObject = new Trading
+                {
+                    StarDate = DateTime.Now,
+                    IsActive = true,
+                    InitialBalance = attemptOrderData.Attributes.Amount.Value,
+                    TradingTransactions = new List<TradingTransaction>
+                    {
+                         individualTradingTransaction
+                    }
+                };
+
+                _context.Trading.Add(tradingObject);
+
+            }
+            else
+            {
+                actualOrder.TradingTransactions.Add(individualTradingTransaction);
+                _context.Trading.Update(actualOrder);
+            }
+
+            await _context.SaveChangesAsync();
         }
 
     }

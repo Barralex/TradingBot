@@ -42,7 +42,7 @@ namespace BitexTradingBot.Core.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     StarDate = table.Column<DateTime>(nullable: false),
                     EndDate = table.Column<DateTime>(nullable: false),
-                    OrderStatus = table.Column<bool>(nullable: false),
+                    IsActive = table.Column<bool>(nullable: false),
                     InitialBalance = table.Column<double>(nullable: false),
                     FinalBalance = table.Column<double>(nullable: false)
                 },
@@ -62,7 +62,7 @@ namespace BitexTradingBot.Core.Migrations
                     OrderTypeId = table.Column<int>(nullable: false),
                     Amount = table.Column<double>(nullable: false),
                     CryptocurrencyPrice = table.Column<double>(nullable: false),
-                    OperationResult = table.Column<double>(nullable: false),
+                    ExpectedOperationResult = table.Column<double>(nullable: false),
                     StarDate = table.Column<DateTime>(nullable: false),
                     EndDate = table.Column<DateTime>(nullable: false),
                     OrderStatusId = table.Column<int>(nullable: false)
@@ -88,6 +88,26 @@ namespace BitexTradingBot.Core.Migrations
                         principalTable: "Trading",
                         principalColumn: "TradingId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "OrderStatus",
+                columns: new[] { "Id", "Description" },
+                values: new object[,]
+                {
+                    { 1, "Open" },
+                    { 2, "Finished" },
+                    { 3, "Manually canceled" },
+                    { 4, "Canceled by price change" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "OrderType",
+                columns: new[] { "Id", "Description" },
+                values: new object[,]
+                {
+                    { 1, "Bid" },
+                    { 2, "Ask" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -15,7 +15,7 @@ namespace BitexTradingBot.Core.DataAccess.DataBase.Models
 
         public double Amount { get; set; }
         public double CryptocurrencyPrice { get; set; }
-        public double OperationResult { get; set; }
+        public double ExpectedOperationResult { get; set; }
         public DateTime StarDate { get; set; }
         public DateTime EndDate { get; set; }
 

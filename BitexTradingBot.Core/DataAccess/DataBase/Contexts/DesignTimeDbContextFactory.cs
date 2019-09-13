@@ -1,5 +1,4 @@
-﻿using BitexTradingBot.Core.Helpers;
-using BitexTradingBot.Core.Models;
+﻿using BitexTradingBot.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;

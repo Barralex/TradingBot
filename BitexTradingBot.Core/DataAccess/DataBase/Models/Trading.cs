@@ -8,7 +8,7 @@ namespace BitexTradingBot.Core.DataAccess.DataBase.Models
         public int TradingId { get; set; }
         public DateTime StarDate { get; set; }
         public DateTime EndDate { get; set; }
-        public bool OrderStatus { get; set; }
+        public bool IsActive { get; set; }
         public double InitialBalance { get; set; }
         public double FinalBalance { get; set; }
 

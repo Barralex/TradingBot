@@ -35,16 +35,21 @@ namespace BitexTradingBot.Core.Migrations
                         new
                         {
                             Id = 1,
-                            Description = "Finished"
+                            Description = "Open"
                         },
                         new
                         {
                             Id = 2,
-                            Description = "Manually canceled"
+                            Description = "Finished"
                         },
                         new
                         {
                             Id = 3,
+                            Description = "Manually canceled"
+                        },
+                        new
+                        {
+                            Id = 4,
                             Description = "Canceled by price change"
                         });
                 });
@@ -86,7 +91,7 @@ namespace BitexTradingBot.Core.Migrations
 
                     b.Property<double>("InitialBalance");
 
-                    b.Property<bool>("OrderStatus");
+                    b.Property<bool>("IsActive");
 
                     b.Property<DateTime>("StarDate");
 
@@ -109,7 +114,7 @@ namespace BitexTradingBot.Core.Migrations
 
                     b.Property<string>("ExchangeOperationId");
 
-                    b.Property<double>("OperationResult");
+                    b.Property<double>("ExpectedOperationResult");
 
                     b.Property<int>("OrderStatusId");
 
