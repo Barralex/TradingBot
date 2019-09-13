@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BitexTradingBot.Core.Constants;
+using BitexTradingBot.Core.DataAccess.DataBase.Enums;
+using System;
 
 namespace BitexTradingBot.Core.Helpers
 {
@@ -10,15 +12,31 @@ namespace BitexTradingBot.Core.Helpers
             return ((actualPrice - orderPrice) / orderPrice) * 100;
         }
 
-        public static double CalculateProfitPrice(this double orderPrice, double minimum, double maximum)
+        public static double CalculateProfitMargin(this double orderPrice, double minimum, double maximum)
         {
             var profitAverage = new Random().NextDouble() * (maximum - minimum) + minimum;
-            return orderPrice - (orderPrice * profitAverage);
+            return orderPrice * profitAverage;
         }
 
         public static bool IsOrderType(this string orderType, string orderTypeToCompare)
         {
             return orderType == orderTypeToCompare;
+        }
+
+        public static OrderStatusEnum BitexStatusToDatabase(this string status)
+        {
+            OrderStatusEnum result = OrderStatusEnum.Open;
+
+            switch (status)
+            {
+                case "cancelled":
+                    result = OrderStatusEnum.ManuallyCanceled;
+                    break;
+                case "completed":
+                    result = OrderStatusEnum.Finished;
+                    break;
+            }
+            return result;
         }
 
     }

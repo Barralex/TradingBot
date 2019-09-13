@@ -76,6 +76,16 @@ namespace BitexTradingBot.Core.Implementations
             });
         }
 
+        public async Task<TResponse> GetCoinWallet<TResponse>(int walletId) where TResponse : class
+        {
+            return await _httpClientApi.InvokeService<TResponse>(new ApiClientOptions
+            {
+                Uri = $"coin_wallets/{walletId}",
+                HttlClientName = "bitex",
+                RequestType = ApiClientRequestTypes.Get
+            });
+        }
+
         public async Task<TResponse> GetBtcPrice<TResponse>() where TResponse : class
         {
             return await _httpClientApi.InvokeService<TResponse>(new ApiClientOptions

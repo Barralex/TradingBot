@@ -8,5 +8,6 @@
         string CoinmarketcapUrl { get; set; }
         string CoinmarketcapApi { get; set; }
         string DatabaseConnectionString { get; set; }
+        int BtcWalletId { get; set; }
     }
 }
