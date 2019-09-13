@@ -1,4 +1,5 @@
-﻿using BitexTradingBot.Core.DataAccess.DataBase.Contexts;
+﻿using BitexTradingBot.BitexTradingBot.Impl;
+using BitexTradingBot.Core.DataAccess.DataBase.Contexts;
 using BitexTradingBot.Core.DataAccess.DataInvoke;
 using BitexTradingBot.Core.Implementations;
 using BitexTradingBot.Core.Interfaces;
@@ -12,12 +13,12 @@ using System.Threading.Tasks;
 
 namespace BitexTradingBot
 {
-    class Program
+    internal class Program
     {
         private static IServiceProvider _serviceProvider;
         private static IConfigurationRoot _appConfig;
 
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             BuildConfiguration();
             RegisterServices();
@@ -37,7 +38,6 @@ namespace BitexTradingBot
                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
                .AddEnvironmentVariables()
                .Build();
-
         }
 
         private static void RegisterServices()
@@ -50,6 +50,7 @@ namespace BitexTradingBot
             services.AddTransient<IHttpClientApi, HttpClientApi>();
             services.AddTransient<ITradingApi, TradingApi>();
             services.AddTransient<IStrategy, Strategy>();
+            services.AddTransient<IStrategyDatabase, StrategyDatabase>();
 
             services.AddSingleton<IWebJobConfiguration>(WebJobConfiguration);
 
@@ -68,7 +69,6 @@ namespace BitexTradingBot
             services.AddDbContext<BitexTradingBotContext>(options => options.UseSqlServer(WebJobConfiguration.DatabaseConnectionString));
 
             _serviceProvider = services.BuildServiceProvider();
-
         }
     }
 }
