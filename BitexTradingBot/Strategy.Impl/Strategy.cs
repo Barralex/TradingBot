@@ -17,11 +17,11 @@ namespace BitexTradingBot
 {
     public class Strategy : IStrategy
     {
+        private readonly BitexTradingBotContext _context;
         private readonly ITradingApi _tradingApi;
         private readonly IWebJobConfiguration _webJobConfiguration;
-        private readonly BitexTradingBotContext _context;
-        private readonly double minimumProfitPercent = 0.01;
         private readonly double maximumProfitPercent = 0.0130;
+        private readonly double minimumProfitPercent = 0.01;
         private readonly double percentToleranceMargin = 2;
 
         public Strategy(ITradingApi tradingApi, IWebJobConfiguration webJobConfiguration, BitexTradingBotContext context)
@@ -35,7 +35,6 @@ namespace BitexTradingBot
 
         public async Task Start()
         {
-
             var activeTrading = _context.Trading.Include(x => x.TradingTransactions).Where(s => s.IsActive).FirstOrDefault();
 
             if (activeTrading == null)
@@ -54,16 +53,24 @@ namespace BitexTradingBot
                 {
                     await HandleAskOrder(activeTrading, order);
                 }
-
             }
+        }
 
+        private async Task CancelAndUpdateOrder(Trading activeTrading, OrderStatusEnum cancellationReason)
+        {
+            await _tradingApi.CancelOrder(activeTrading.TradingTransactions.Last().ExchangeOperationId, TradingContants.Bids);
+
+            activeTrading.TradingTransactions.Last().OrderStatusId = (int)cancellationReason;
+            _context.Trading.Update(activeTrading);
+            await _context.SaveChangesAsync();
+
+            await SetTradingOrder(TradingContants.Bids, activeTrading);
         }
 
         private async Task HandleAskOrder(Trading activeTrading, TradingTransaction order)
         {
             if (order.OrderStatusId == (int)OrderStatusEnum.Open)
             {
-
                 var orderStatus = (await _tradingApi.GetOrder<TradingOrder>(TradingContants.Aks, order.ExchangeOperationId))
                     .Details.Attributes.Status;
 
@@ -75,13 +82,11 @@ namespace BitexTradingBot
 
                     await SetTradingOrder(TradingContants.Bids);
                 }
-
             }
         }
 
         private async Task HandleBidOrder(Trading activeTrading, TradingTransaction order)
         {
-
             if (order.OrderStatusId == (int)OrderStatusEnum.Open)
             {
                 var result = (await _tradingApi.GetOrder<TradingOrder>(TradingContants.Bids, order.ExchangeOperationId))
@@ -89,7 +94,7 @@ namespace BitexTradingBot
 
                 if (result.Status == TradingContants.OpenStatus)
                 {
-                    var actualBtcPrice= (await _tradingApi.GetBtcPrice<Cryptocurrency>()).Details.Price;
+                    var actualBtcPrice = (await _tradingApi.GetBtcPrice<Cryptocurrency>()).Details.Price;
 
                     if (order.CryptocurrencyPrice.CalculatePercentDiference(actualBtcPrice) > percentToleranceMargin)
                     {
@@ -106,7 +111,6 @@ namespace BitexTradingBot
                 {
                     await SetTradingOrder(TradingContants.Aks);
                 }
-
             }
             else if (order.OrderStatusId == (int)OrderStatusEnum.Finished)
             {
@@ -116,19 +120,21 @@ namespace BitexTradingBot
             {
                 await SetTradingOrder(TradingContants.Bids);
             }
-
         }
 
-        private async Task CancelAndUpdateOrder(Trading activeTrading, OrderStatusEnum cancellationReason)
+        private async Task<TradingOrdenRequest> PrepareAskOrder(double lastBidPrice)
         {
+            var btcBalance = await _tradingApi.GetCoinWallet<Wallet>(_webJobConfiguration.BtcWalletId);
 
-            await _tradingApi.CancelOrder(activeTrading.TradingTransactions.Last().ExchangeOperationId, TradingContants.Bids);
+            if (btcBalance.Attributes.Available < 1)
+            {
+                throw new Exception("There is not more btc left");
+            }
 
-            activeTrading.TradingTransactions.Last().OrderStatusId = (int)cancellationReason;
-            _context.Trading.Update(activeTrading);
-            await _context.SaveChangesAsync();
+            var PriceMargin = lastBidPrice.CalculateProfitMargin(minimumProfitPercent, maximumProfitPercent);
 
-            await SetTradingOrder(TradingContants.Bids, activeTrading);
+            return new TradingOrdenRequest(btcBalance.Attributes.Available, lastBidPrice + PriceMargin,
+                _webJobConfiguration.BitexDefaultMarket, TradingContants.Aks);
         }
 
         private async Task<TradingOrdenRequest> PrepareBidOrder()
@@ -149,24 +155,8 @@ namespace BitexTradingBot
             _webJobConfiguration.BitexDefaultMarket, TradingContants.Bids);
         }
 
-        private async Task<TradingOrdenRequest> PrepareAskOrder(double lastBidPrice)
-        {
-            var btcBalance = await _tradingApi.GetCoinWallet<Wallet>(_webJobConfiguration.BtcWalletId);
-
-            if (btcBalance.Attributes.Available < 1)
-            {
-                throw new Exception("There is not more btc left");
-            }
-
-            var PriceMargin = lastBidPrice.CalculateProfitMargin(minimumProfitPercent, maximumProfitPercent);
-
-            return new TradingOrdenRequest(btcBalance.Attributes.Available, lastBidPrice + PriceMargin,
-                _webJobConfiguration.BitexDefaultMarket, TradingContants.Aks);
-        }
-
         private async Task SetTradingOrder(string orderType, Trading actualOrder = null)
         {
-
             TradingOrdenRequest order;
 
             if (orderType == TradingContants.Bids)
@@ -193,7 +183,6 @@ namespace BitexTradingBot
 
             if (actualOrder == null)
             {
-
                 var tradingObject = new Trading
                 {
                     StarDate = DateTime.Now,
@@ -206,7 +195,6 @@ namespace BitexTradingBot
                 };
 
                 _context.Trading.Add(tradingObject);
-
             }
             else
             {

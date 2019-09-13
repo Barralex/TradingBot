@@ -8,6 +8,7 @@ namespace BitexTradingBot.Core.Models
     {
         [JsonProperty("data.id")]
         public string Id { get; set; }
+
         [JsonProperty("data.type")]
         public string Type { get; set; }
 
@@ -19,11 +20,11 @@ namespace BitexTradingBot.Core.Models
     {
         [JsonProperty("balance")]
         public double Balance { get; set; }
+
         [JsonProperty("available")]
         public double Available { get; set; }
+
         [JsonProperty("currency")]
         public string Currency { get; set; }
     }
 }
-
-

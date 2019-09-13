@@ -1,12 +1,10 @@
-﻿using BitexTradingBot.Core.Constants;
-using BitexTradingBot.Core.DataAccess.DataBase.Enums;
+﻿using BitexTradingBot.Core.DataAccess.DataBase.Enums;
 using System;
 
 namespace BitexTradingBot.Core.Helpers
 {
     public static class CommonExtensions
     {
-
         public static double CalculatePercentDiference(this double orderPrice, double actualPrice)
         {
             return ((actualPrice - orderPrice) / orderPrice) * 100;
@@ -32,12 +30,12 @@ namespace BitexTradingBot.Core.Helpers
                 case "cancelled":
                     result = OrderStatusEnum.ManuallyCanceled;
                     break;
+
                 case "completed":
                     result = OrderStatusEnum.Finished;
                     break;
             }
             return result;
         }
-
     }
 }
