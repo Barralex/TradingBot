@@ -1,4 +1,5 @@
 ﻿using BitexTradingBot.Core.Constants;
+using BitexTradingBot.BitexTradingBot.Impl;
 using BitexTradingBot.Core.DataAccess.DataBase.Contexts;
 using BitexTradingBot.Core.DataAccess.DataInvoke;
 using BitexTradingBot.Core.Implementations;
@@ -84,6 +85,7 @@ namespace BitexTradingBot
             services.AddDbContext<BitexTradingBotContext>(options => options.UseSqlServer(WebJobConfiguration.DatabaseConnectionString));
 
             _serviceProvider = services.BuildServiceProvider();
+
         }
     }
 }

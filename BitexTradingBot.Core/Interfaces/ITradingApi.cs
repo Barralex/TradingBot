@@ -13,5 +13,7 @@ namespace BitexTradingBot.Core.Interfaces
         Task<TResponse> GetCashWallet<TResponse>(string currency) where TResponse : class;
 
         Task<TResponse> GetOrder<TResponse>(string orderType, string orderId) where TResponse : class;
+
+        Task<TResponse> GetCoinWallet<TResponse>(int walletId) where TResponse : class;
     }
 }
