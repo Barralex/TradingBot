@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.106
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitexTradingBot", "BitexTradingBot\BitexTradingBot.csproj", "{D3424DBA-01EF-46DE-AC56-CFE4E7CE8838}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoTradingBot", "BitexTradingBot\CryptoTradingBot.csproj", "{D3424DBA-01EF-46DE-AC56-CFE4E7CE8838}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BitexTradingBot.Core", "BitexTradingBot.Core\BitexTradingBot.Core.csproj", "{C1ED523F-22A4-466C-A805-803065FAFA03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoTradingBot.Core", "BitexTradingBot.Core\CryptoTradingBot.Core.csproj", "{C1ED523F-22A4-466C-A805-803065FAFA03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

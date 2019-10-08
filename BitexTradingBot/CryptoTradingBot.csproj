@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk;Microsoft.NET.Sdk.Publish">
+﻿<Project Sdk="Microsoft.NET.Sdk;Microsoft.NET.Sdk.Publish">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -20,7 +20,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BitexTradingBot.Core\BitexTradingBot.Core.csproj" />
+    <ProjectReference Include="..\BitexTradingBot.Core\CryptoTradingBot.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

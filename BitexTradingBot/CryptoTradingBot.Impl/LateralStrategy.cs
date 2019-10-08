@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BitexTradingBot
 {
-    public class Strategy : IStrategy
+    public class LateralStrategy : IStrategy
     {
         private readonly IStrategyDatabase _strategyDatabaseAccess;
         private readonly ITradingApi _tradingApi;
@@ -21,7 +21,7 @@ namespace BitexTradingBot
         private readonly double minimumProfitPercent = 0.01;
         private readonly double percentToleranceMargin = 2;
 
-        public Strategy(ITradingApi tradingApi, IWebJobConfiguration webJobConfiguration, IStrategyDatabase databaseAccess)
+        public LateralStrategy(ITradingApi tradingApi, IWebJobConfiguration webJobConfiguration, IStrategyDatabase databaseAccess)
         {
             _tradingApi = tradingApi;
             _webJobConfiguration = webJobConfiguration;
@@ -62,11 +62,8 @@ namespace BitexTradingBot
 
                 if (orderStatus != TradingContants.OpenStatus)
                 {
-                    activeTrading.TradingTransactions.Last().OrderStatusId = (int)orderStatus.BitexStatusToDatabase();
-                    _context.Trading.Update(activeTrading);
-                    await _context.SaveChangesAsync();
-
-                    await SetTradingOrder(TradingContants.Bids);
+                    await _strategyDatabaseAccess.UpdateOrderStatus(activeTrading, orderStatus.BitexStatusToDatabase());
+                    await SetAskOrder(activeTrading);
                 }
             }
         }
