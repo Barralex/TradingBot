@@ -1,10 +1,10 @@
-﻿using System.Net.Http;
+﻿using BitexTradingBot.Core.DataAccess.DataInvoke.ApiClient;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using System;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using BitexTradingBot.Core.DataAccess.DataInvoke.ApiClient;
-using Newtonsoft.Json;
-using System;
-using Newtonsoft.Json.Serialization;
 
 namespace BitexTradingBot.Core.DataAccess.DataInvoke
 {
@@ -19,7 +19,7 @@ namespace BitexTradingBot.Core.DataAccess.DataInvoke
 
         public async Task<TResponse> InvokeService<TResponse>(ApiClientOptions options) where TResponse : class
         {
-            var result =  await InvokeBaseService(options);
+            var result = await InvokeBaseService(options);
             return JsonConvert.DeserializeObject<TResponse>(result);
         }
 
@@ -30,7 +30,6 @@ namespace BitexTradingBot.Core.DataAccess.DataInvoke
 
         private async Task<string> InvokeBaseService(ApiClientOptions options)
         {
-
             using (HttpClient client = _clientFactory.CreateClient(options.HttlClientName))
             {
                 HttpResponseMessage response = null;
@@ -38,7 +37,6 @@ namespace BitexTradingBot.Core.DataAccess.DataInvoke
 
                 if (options.ContentType == ApiClientRequestContentTypes.Json)
                 {
-
                     DefaultContractResolver contractResolver = new DefaultContractResolver
                     {
                         NamingStrategy = new CamelCaseNamingStrategy()

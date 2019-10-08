@@ -4,7 +4,6 @@ namespace BitexTradingBot.Core.Models.Requests
 {
     public class TradingOrdenRequest
     {
-
         public TradingOrdenRequest(double amount, double price, string orderbook, string orderType)
         {
             Data.Attributes.Amount = amount;

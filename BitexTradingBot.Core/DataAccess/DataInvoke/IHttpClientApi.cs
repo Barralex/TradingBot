@@ -6,6 +6,7 @@ namespace BitexTradingBot.Core.DataAccess.DataInvoke
     public interface IHttpClientApi
     {
         Task<TResponse> InvokeService<TResponse>(ApiClientOptions options) where TResponse : class;
+
         Task InvokeService(ApiClientOptions options);
     }
 }

@@ -13,7 +13,6 @@ namespace BitexTradingBot.Core.Models
 
     public class TickersDetails
     {
-
         [JsonProperty("id")]
         public string Id { get; set; }
 
@@ -53,5 +52,4 @@ namespace BitexTradingBot.Core.Models
         [JsonProperty("price_before_last")]
         public double? PriceBeforeLast { get; set; }
     }
-
 }

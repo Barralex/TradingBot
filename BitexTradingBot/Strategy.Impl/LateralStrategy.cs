@@ -12,21 +12,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static BitexTradingBot.Program;
 
 namespace BitexTradingBot
 {
-    public class Strategy : IStrategy
+    public class LateralStrategy : IStrategy
     {
         private readonly ITradingApi _tradingApi;
         private readonly IWebJobConfiguration _webJobConfiguration;
         private readonly BitexTradingBotContext _context;
-        private readonly double minimumProfitPercent = 0.01;
-        private readonly double maximumProfitPercent = 0.0130;
+        private readonly double minimumProfitPercent = 0.0125;
+        private readonly double maximumProfitPercent = 0.0150;
         private readonly double percentToleranceMargin = 2;
 
-        public Strategy(ITradingApi tradingApi, IWebJobConfiguration webJobConfiguration, BitexTradingBotContext context)
+        public LateralStrategy(ServiceResolver serviceAccessor, IWebJobConfiguration webJobConfiguration, BitexTradingBotContext context)
         {
-            _tradingApi = tradingApi;
+            _tradingApi = serviceAccessor(ServiceKeyEnum.Bitex);
             _webJobConfiguration = webJobConfiguration;
             _context = context;
         }
@@ -35,7 +36,6 @@ namespace BitexTradingBot
 
         public async Task Start()
         {
-
             var activeTrading = _context.Trading.Include(x => x.TradingTransactions).Where(s => s.IsActive).FirstOrDefault();
 
             if (activeTrading == null)
@@ -51,13 +51,30 @@ namespace BitexTradingBot
                     await HandleBidOrder(activeTrading, order);
                 }
 
+                await HandleAskOrder(activeTrading, order);
             }
+        }
 
+        private async Task HandleAskOrder(Trading activeTrading, TradingTransaction order)
+        {
+            if (order.OrderStatusId == (int)OrderStatusEnum.Open)
+            {
+                var result = await _tradingApi.GetOrder<TradingOrder>(TradingContants.Bids, order.ExchangeOperationId);
+
+                if (result.Details.Attributes.Status == TradingContants.OpenStatus)
+                {
+                    var actualBtcInformation = await _tradingApi.GetBtcPrice<Cryptocurrency>();
+
+                    if (order.CryptocurrencyPrice.CalculatePercentDiference(actualBtcInformation.Details.Price) > percentToleranceMargin)
+                    {
+                        await CancelAndUpdateOrder(activeTrading, OrderStatusEnum.CanceledByPriceChange);
+                    }
+                }
+            }
         }
 
         private async Task HandleBidOrder(Trading activeTrading, TradingTransaction order)
         {
-
             if (order.OrderStatusId == (int)OrderStatusEnum.Open)
             {
                 var result = await _tradingApi.GetOrder<TradingOrder>(TradingContants.Bids, order.ExchangeOperationId);
@@ -81,12 +98,10 @@ namespace BitexTradingBot
             {
                 await CreateTradingOrder();
             }
-
         }
 
         private async Task CancelAndUpdateOrder(Trading activeTrading, OrderStatusEnum cancellationReason)
         {
-
             await _tradingApi.CancelOrder(activeTrading.TradingTransactions.Last().ExchangeOperationId, TradingContants.Bids);
 
             activeTrading.TradingTransactions.Last().OrderStatusId = (int)cancellationReason;
@@ -115,7 +130,6 @@ namespace BitexTradingBot
 
         private async Task CreateTradingOrder(Trading actualOrder = null)
         {
-
             var order = await PrepareBidExchangeOrder();
 
             var attemptOrderData = (await _tradingApi.PlaceOrder<TradingOrder>(order, TradingContants.Bids)).Details;
@@ -133,7 +147,6 @@ namespace BitexTradingBot
 
             if (actualOrder == null)
             {
-
                 var tradingObject = new Trading
                 {
                     StarDate = DateTime.Now,
@@ -146,7 +159,6 @@ namespace BitexTradingBot
                 };
 
                 _context.Trading.Add(tradingObject);
-
             }
             else
             {
@@ -156,6 +168,5 @@ namespace BitexTradingBot
 
             await _context.SaveChangesAsync();
         }
-
     }
 }

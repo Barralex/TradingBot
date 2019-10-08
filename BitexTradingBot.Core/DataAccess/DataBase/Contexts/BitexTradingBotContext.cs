@@ -19,6 +19,5 @@ namespace BitexTradingBot.Core.DataAccess.DataBase.Contexts
             modelBuilder.ApplyConfiguration(new OrderTypeSeed());
             modelBuilder.ApplyConfiguration(new OrderStatusSeed());
         }
-
     }
 }

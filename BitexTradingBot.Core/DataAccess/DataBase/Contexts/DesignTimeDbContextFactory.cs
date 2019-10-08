@@ -7,9 +7,8 @@ using System.IO;
 
 namespace BitexTradingBot.Core.DataAccess.DataBase.Contexts
 {
-    class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<BitexTradingBotContext>
+    internal class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<BitexTradingBotContext>
     {
-
         public BitexTradingBotContext CreateDbContext(string[] args)
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");

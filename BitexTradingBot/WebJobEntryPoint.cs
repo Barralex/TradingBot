@@ -11,12 +11,12 @@ namespace BitexTradingBot
         public WebJobEntryPoint(IWebJobConfiguration webJobConfiguration, IStrategy strategy)
         {
             _webJobConfiguration = webJobConfiguration;
-            _strategy = strategy;;
+            _strategy = strategy; ;
         }
 
         public async Task Run()
         {
-           await _strategy.Start();
+            await _strategy.Start();
         }
     }
 }

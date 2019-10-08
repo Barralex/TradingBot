@@ -4,7 +4,6 @@ namespace BitexTradingBot.Core.Helpers
 {
     public static class CommonExtensions
     {
-
         public static double CalculatePercentDiference(this double orderPrice, double actualPrice)
         {
             return ((actualPrice - orderPrice) / orderPrice) * 100;
@@ -20,6 +19,5 @@ namespace BitexTradingBot.Core.Helpers
         {
             return orderType == orderTypeToCompare;
         }
-
     }
 }

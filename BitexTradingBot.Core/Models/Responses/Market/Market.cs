@@ -20,5 +20,3 @@ namespace BitexTradingBot.Core.Models
         public List<Data> Aks { get; set; } = new List<Data>();
     }
 }
-
-

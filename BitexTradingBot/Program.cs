@@ -1,4 +1,5 @@
-﻿using BitexTradingBot.Core.DataAccess.DataBase.Contexts;
+﻿using BitexTradingBot.Core.Constants;
+using BitexTradingBot.Core.DataAccess.DataBase.Contexts;
 using BitexTradingBot.Core.DataAccess.DataInvoke;
 using BitexTradingBot.Core.Implementations;
 using BitexTradingBot.Core.Interfaces;
@@ -7,17 +8,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
 namespace BitexTradingBot
 {
-    class Program
+    public class Program
     {
         private static IServiceProvider _serviceProvider;
         private static IConfigurationRoot _appConfig;
 
-        static async Task Main(string[] args)
+        public delegate ITradingApi ServiceResolver(ServiceKeyEnum key);
+
+        private static async Task Main(string[] args)
         {
             BuildConfiguration();
             RegisterServices();
@@ -37,7 +41,6 @@ namespace BitexTradingBot
                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
                .AddEnvironmentVariables()
                .Build();
-
         }
 
         private static void RegisterServices()
@@ -48,8 +51,21 @@ namespace BitexTradingBot
 
             services.AddTransient<WebJobEntryPoint>();
             services.AddTransient<IHttpClientApi, HttpClientApi>();
-            services.AddTransient<ITradingApi, TradingApi>();
-            services.AddTransient<IStrategy, Strategy>();
+            services.AddTransient<IStrategy, LateralStrategy>();
+
+            services.AddTransient<BitexTradingApi>();
+
+            services.AddTransient<ServiceResolver>(serviceProvider => key =>
+            {
+                switch (key)
+                {
+                    case ServiceKeyEnum.Bitex:
+                        return serviceProvider.GetService<BitexTradingApi>();
+
+                    default:
+                        throw new KeyNotFoundException();
+                }
+            });
 
             services.AddSingleton<IWebJobConfiguration>(WebJobConfiguration);
 
@@ -68,7 +84,6 @@ namespace BitexTradingBot
             services.AddDbContext<BitexTradingBotContext>(options => options.UseSqlServer(WebJobConfiguration.DatabaseConnectionString));
 
             _serviceProvider = services.BuildServiceProvider();
-
         }
     }
 }

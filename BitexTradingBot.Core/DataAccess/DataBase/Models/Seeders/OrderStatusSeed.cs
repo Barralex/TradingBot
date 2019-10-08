@@ -1,13 +1,11 @@
 ﻿using BitexTradingBot.Core.DataAccess.DataBase.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
 
 namespace BitexTradingBot.Core.DataAccess.DataBase.Seeders
 {
     public class OrderStatusSeed : IEntityTypeConfiguration<OrderStatus>
     {
-
         public void Configure(EntityTypeBuilder<OrderStatus> builder)
         {
             builder.ToTable("OrderStatus");
@@ -36,7 +34,5 @@ namespace BitexTradingBot.Core.DataAccess.DataBase.Seeders
                 }
             );
         }
-
     }
-
 }

@@ -1,15 +1,15 @@
-﻿using System.Threading.Tasks;
-using BitexTradingBot.Core.DataAccess.DataInvoke;
+﻿using BitexTradingBot.Core.DataAccess.DataInvoke;
 using BitexTradingBot.Core.DataAccess.DataInvoke.ApiClient;
 using BitexTradingBot.Core.Interfaces;
+using System.Threading.Tasks;
 
 namespace BitexTradingBot.Core.Implementations
 {
-    public class TradingApi : ITradingApi
+    public class BitexTradingApi : ITradingApi
     {
         private readonly IHttpClientApi _httpClientApi;
 
-        public TradingApi(IHttpClientApi httpClientApi)
+        public BitexTradingApi(IHttpClientApi httpClientApi)
         {
             _httpClientApi = httpClientApi;
         }

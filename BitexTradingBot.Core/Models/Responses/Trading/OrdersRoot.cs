@@ -10,7 +10,4 @@ namespace BitexTradingBot.Core.Models
         [JsonProperty("data")]
         public List<TradingOrderDetails> Orders { get; set; } = new List<TradingOrderDetails>();
     }
-
 }
-
-
